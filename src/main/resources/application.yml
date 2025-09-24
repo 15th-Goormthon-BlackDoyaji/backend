@@ -4,7 +4,17 @@ spring:
   mvc:
     servlet:
       path: /api
+  datasource:
+    url: jdbc:mysql://mysql.goormthon-3.svc.cluster.local:3306/mydb?useSSL=false&serverTimezone=Asia/Seoul
+    username: myuser
+    password: mypass123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
 management:
   server:
     port: 8080
+
+
