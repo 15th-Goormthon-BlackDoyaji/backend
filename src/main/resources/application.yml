@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: black-pig-api
+  mvc:
+    servlet:
+      path: /api
+
+management:
+  server:
+    port: 8080
