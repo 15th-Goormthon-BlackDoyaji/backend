@@ -24,7 +24,7 @@ Thumbs.db
 *.bak
 
 # Docker 관련 파일 제외
-Dockerfile
+k8s/backend/Dockerfile
 .dockerignore
 
 # 기타 불필요한 파일 제외
