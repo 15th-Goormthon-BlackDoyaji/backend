@@ -1,0 +1,10 @@
+-- spmple SQL script --
+CREATE DATABASE IF NOT EXISTS mydb;
+USE mydb;
+
+CREATE TABLE IF NOT EXISTS test_data (
+    id INT AUTO_INCREMENT PRIMARY KEY
+);
+
+GRANT ALL PRIVILEGES ON mydb.* TO 'myuser'@'%' IDENTIFIED BY 'mypassword';
+FLUSH PRIVILEGES;
