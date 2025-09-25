@@ -41,7 +41,7 @@ public class EducationInfosDataInitializer {
             EducationInfos info = new EducationInfos(
                     null,
                     "교육 제목 " + i,
-                    "교육 요약 " + i + "\n상세 설명 포함",
+                    "교육 요약 " + i + "\n상세 설명 포함","keywords1, keywords2",
                     educations[i % educations.length], // 균등 분포
                     regions[i % regions.length],       // 균등 분포
                     residencies[i % residencies.length], // 균등 분포
