@@ -20,7 +20,7 @@ public class MailEvent extends ApplicationEvent {
         this.subscriber = subscriber;
 
         for (int i = 1; i <= infos.size(); i++) {
-            articles.add(new Article(i, infos.get(i)));
+            articles.add(new Article(i, infos.get(i-1)));
         }
         this.articles = articles;
     }
