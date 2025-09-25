@@ -6,10 +6,12 @@ import com.goormthon.service.EmailSender;
 import jakarta.mail.MessagingException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class MailEventListener {
@@ -19,8 +21,9 @@ public class MailEventListener {
     private final EmailSender emailSender;
 
     @Async("asyncTaskExecutor")
-    @EventListener(MailEventListener.class)
+    @EventListener(MailEvent.class)
     public void mail(MailEvent event) throws MessagingException {
+        log.info("Mail event: {}", event);
         Subscriber subscriber = event.getSubscriber();
         List<Article> articles = event.getArticles();
         emailSender.sendNewsletterEmail(subscriber.getEmail(), MAIL_SUBJECT, articles);
