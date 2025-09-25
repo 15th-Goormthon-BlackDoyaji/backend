@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - ../base
 
-#namespace: goormthon-3 # fix me
+namespace: goormthon-3 # fix me
 # ArgoCD 사용 시 비워도 됩니다. 대신 ArgoCD 에서 namespace를 지정해 주세요.
 
 images:
@@ -22,3 +22,5 @@ patches:
           MYSQL_USER: myuser
           MYSQL_PASSWORD: mypass123
           MYSQL_DATABASE: mydb
+
+
