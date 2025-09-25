@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MailEventListener {
 
-    private static final String MAIL_SUBJECT = "Mail";
+    private static final String MAIL_SUBJECT = "[MaeJu Newsletter — September Week 4]";
 
     private final EmailSender emailSender;
 
