@@ -1,0 +1,735 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${newsletterTitle}">MaeJu 뉴스레터</title>
+    <style type="text/css">
+        /* Reset styles */
+        body,
+        table,
+        td,
+        p,
+        a,
+        li,
+        blockquote {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        table,
+        td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        img {
+            -ms-interpolation-mode: bicubic;
+        }
+
+        /* Email-specific styles */
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            min-width: 100%;
+            background-color: #ffffff;
+        }
+
+        .email-container {
+            width: 600px;
+            background-color: #ffffff;
+        }
+
+        /* Header styles */
+        .header-section {
+            background-color: #393939;
+            height: 275px;
+            position: relative;
+        }
+
+        .header-content {
+            padding: 56.5px 32px 0 32px;
+        }
+
+        .main-title {
+            color: #ffffff;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 26px;
+            padding: 0 0 20px 0;
+            letter-spacing: -0.1px;
+        }
+
+        .brand-name {
+            color: #ffffff;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 62px;
+            padding: 0 0 20px 0;
+            letter-spacing: -0.4px;
+        }
+
+        .header-description {
+            color: #e1e1e1;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 18px;
+            padding: 0;
+            letter-spacing: -0.1px;
+        }
+
+        /* Content section styles */
+        .content-section {
+            background-color: #ffffff;
+            padding: 50px 32px 0 32px;
+        }
+
+        /* Newsletter intro styles */
+        .newsletter-intro {
+            padding-bottom: 38px;
+        }
+
+        .newsletter-title {
+            color: #000000;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 36px;
+            padding: 0 0 68px 0;
+            letter-spacing: -0.3px;
+        }
+
+        .greeting-text {
+            color: #000000;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 25.2px;
+            padding: 0;
+            letter-spacing: -0.1px;
+        }
+
+        .greeting-name {
+            font-weight: bold;
+        }
+
+        /* Article card styles */
+        .articles-container {
+            padding-bottom: 38px;
+        }
+
+        .article-card {
+            background-color: #f7f7f7;
+            border-radius: 16px;
+            padding: 30px 20px;
+        }
+
+        .article-header {
+            padding-bottom: 40px;
+        }
+
+        .article-title-section {
+            padding-bottom: 8px;
+        }
+
+        .article-number {
+            color: #000000;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 26px;
+            padding: 0;
+            letter-spacing: -0.1px;
+        }
+
+        .keyword-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .keyword-label {
+            color: #000000;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 26.6px;
+            letter-spacing: -0.1px;
+        }
+
+        .tags-container {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background-color: #e1e1e1;
+            color: #393939;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 1px 6px;
+            border-radius: 8px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            line-height: 18px;
+        }
+
+        .tag.primary {
+            background-color: #dddddd;
+        }
+
+        /* Article content styles */
+        .article-section {
+            padding-bottom: 40px;
+        }
+
+        .article-section:last-child {
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            color: #000000;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 24px;
+            padding: 0 0 12px 0;
+            letter-spacing: -0.1px;
+        }
+
+        .section-content {
+            color: #000000;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 22px;
+            padding: 0;
+            letter-spacing: -0.1px;
+        }
+
+        .contact-info {
+            color: #000000;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 18px;
+            padding: 12px 0 0 0;
+            letter-spacing: -0.1px;
+        }
+
+        .url-link {
+            color: #000000;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 18px;
+            text-decoration: underline;
+            letter-spacing: -0.1px;
+        }
+
+        /* Footer section styles */
+        .footer-section {
+            padding: 0 32px 32px 32px;
+        }
+
+        .footer-content {
+            padding-bottom: 14px;
+        }
+
+        .footer-text {
+            color: #000000;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 25.2px;
+            padding: 0;
+            letter-spacing: -0.1px;
+        }
+
+        .footer-brand {
+            font-weight: bold;
+        }
+
+        .cta-button {
+            background-color: #393939;
+            border-radius: 12px;
+            padding: 10px;
+            width: 330px;
+            text-align: center;
+        }
+
+        .cta-text {
+            color: #ffffff;
+            font-family: 'Pretendard', Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 25.2px;
+            padding: 0;
+            letter-spacing: -0.1px;
+        }
+
+        /* Responsive adjustments for email clients */
+        @media screen and (max-width: 640px) {
+            .email-container {
+                width: 100% !important;
+                max-width: 600px;
+            }
+            .tags-container {
+                display: block;
+            }
+            .tag {
+                display: inline-block;
+                margin-right: 6px;
+                margin-bottom: 6px;
+            }
+            .keyword-section {
+                display: block;
+            }
+            .keyword-label {
+                display: block;
+                padding-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+    <tr>
+        <td align="center">
+            <table
+                    role="presentation"
+                    cellspacing="0"
+                    cellpadding="0"
+                    border="0"
+                    class="email-container"
+                    style="width: 600px; background-color: #ffffff"
+                    align="center"
+            >
+                <!-- Header Section -->
+                <tr>
+                    <td
+                            class="header-section"
+                            style="background-color: #393939; height: 240px; position: relative"
+                    >
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                            <tr>
+                                <td class="header-content" style="padding: 12px 32px 12px 32px">
+                                    <table
+                                            role="presentation"
+                                            cellspacing="0"
+                                            cellpadding="0"
+                                            border="0"
+                                            width="365"
+                                    >
+                                        <tr>
+                                            <td>
+                                                <p
+                                                        class="main-title"
+                                                        style="
+                                color: #ffffff;
+                                font-family: 'Pretendard', Arial, sans-serif;
+                                font-size: 18px;
+                                font-weight: bold;
+                                line-height: 26px;
+                                padding: 0 0 0 0;
+                                letter-spacing: -0.1px;
+                              "
+                                                >
+                                                    제주 청년과 함께하는
+                                                </p>
+                                                <p
+                                                        class="brand-name"
+                                                        style="
+                                color: #ffffff;
+                                font-family: 'Pretendard', Arial, sans-serif;
+                                font-size: 48px;
+                                font-weight: 800;
+                                padding: 0;
+                                letter-spacing: -0.4px;
+                                margin: 0;
+                              "
+                                                >
+                                                    MaeJu
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-top: 20px">
+                                                <p
+                                                        class="header-description"
+                                                        style="
+                                color: #e1e1e1;
+                                font-family: 'Pretendard', Arial, sans-serif;
+                                font-size: 12px;
+                                font-weight: 500;
+                                line-height: 18px;
+                                padding: 0;
+                                letter-spacing: -0.1px;
+                              "
+                                                >
+                                                    MaeJu는 '매주 찾아오는 기회'와 '제주에서 이어지는 다음 단계'를
+                                                    의미합니다.<br />매주 개인화된 다섯 가지 교육 · 취업 정보를 통해<br />제주
+                                                    청년의 새로운 길을 연결합니다.
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Content Section -->
+                <tr>
+                    <td
+                            class="content-section"
+                            style="background-color: #ffffff; padding: 50px 32px 0 32px"
+                    >
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="536">
+                            <!-- Newsletter Introduction -->
+                            <tr>
+                                <td class="newsletter-intro" style="margin-bottom: 38px">
+                                    <table
+                                            role="presentation"
+                                            cellspacing="0"
+                                            cellpadding="0"
+                                            border="0"
+                                            width="100%"
+                                    >
+                                        <tr>
+                                            <td>
+                                                <p
+                                                        class="newsletter-title"
+                                                        style="
+                                color: #000000;
+                                font-family: 'Pretendard', Arial, sans-serif;
+                                font-size: 24px;
+                                font-weight: bold;
+                                line-height: 36px;
+                                padding: 0 0 12px 0;
+                                letter-spacing: -0.3px;
+                                margin: 0;
+                              "
+                                                        th:text="${weeklyTitle ?: (currentDate + ' MaeJu 뉴스레터 💌')}"
+                                                >
+                                                    9월 4주차 MaeJu 뉴스레터 💌
+                                                </p>
+                                                <p
+                                                        class="greeting-text"
+                                                        style="
+                                color: #000000;
+                                font-family: 'Pretendard', Arial, sans-serif;
+                                font-size: 14px;
+                                font-weight: 500;
+                                line-height: 25.2px;
+                                padding: 0;
+                                letter-spacing: -0.1px;
+                                margin: 0;
+                              "
+                                                        th:utext="${greetingText ?: '이번 주는 <b>대학생</b>, <b>자격증</b>, <b>취업준비</b>에 맞는<br />5가지 교육 기회를 준비했어요.'}"
+                                                >
+                                                    <br />이번 주는 <b>대학생</b>, <b>자격증</b>, <b>취업준비</b>에
+                                                    맞는<br />5가지 교육 기회를 준비했어요.
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <!-- Articles Container -->
+                            <tr>
+                                <td class="articles-container" style="margin-bottom: 38px">
+                                    <table
+                                            role="presentation"
+                                            cellspacing="0"
+                                            cellpadding="0"
+                                            border="0"
+                                            width="100%"
+                                    >
+                                        <!-- 동적 Article 리스트 -->
+                                        <th:block th:each="article, articleStat : ${articles}">
+                                            <!-- Article Card -->
+                                            <tr>
+                                                <td
+                                                        class="article-card"
+                                                        style="
+                              background-color: #f7f7f7;
+                              border-radius: 16px;
+                              padding: 30px 20px;
+                              margin-bottom: 30px;
+                            "
+                                                        th:style="${articleStat.last} ? 'background-color: #f7f7f7; border-radius: 16px; padding: 30px 20px;' : 'background-color: #f7f7f7; border-radius: 16px; padding: 30px 20px; margin-bottom: 30px;'"
+                                                >
+                                                    <table
+                                                            role="presentation"
+                                                            cellspacing="0"
+                                                            cellpadding="0"
+                                                            border="0"
+                                                            width="100%"
+                                                    >
+                                                        <!-- Article Header -->
+                                                        <tr>
+                                                            <td class="article-header" style="margin-bottom: 40px">
+                                                                <table
+                                                                        role="presentation"
+                                                                        cellspacing="0"
+                                                                        cellpadding="0"
+                                                                        border="0"
+                                                                        width="398"
+                                                                >
+                                                                    <tr>
+                                                                        <td class="article-title-section" style="margin-bottom: 8px">
+                                                                            <p
+                                                                                    class="article-number"
+                                                                                    style="
+                                            color: #000000;
+                                            font-family: 'Pretendard', Arial, sans-serif;
+                                            font-size: 18px;
+                                            font-weight: bold;
+                                            line-height: 26px;
+                                            padding: 0;
+                                            letter-spacing: -0.1px;
+                                          "
+                                                                                    th:text="${article.number} + '. ' + ${article.title}"
+                                                                            >
+                                                                                1. 제목
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td class="keyword-section" style="display: table">
+                                                                            <table
+                                                                                    role="presentation"
+                                                                                    cellspacing="0"
+                                                                                    cellpadding="0"
+                                                                                    border="0"
+                                                                            >
+                                                                                <tr>
+                                                                                    <td
+                                                                                            class="keyword-label"
+                                                                                            style="
+                                                color: #000000;
+                                                font-family: 'Pretendard', Arial, sans-serif;
+                                                font-size: 14px;
+                                                font-weight: 500;
+                                                line-height: 26.6px;
+                                                letter-spacing: -0.1px;
+                                                padding-right: 12px;
+                                              "
+                                                                                    >
+                                                                                        Keyword
+                                                                                    </td>
+                                                                                    <td class="tags-container">
+                                                                                        <!-- 키워드 태그들 동적 생성 -->
+                                                                                        <th:block th:each="keyword : ${article.keywords}">
+                                                                                            <span
+                                                                                                    class="tag"
+                                                                                                    style="
+                                                  background-color: #e1e1e1;
+                                                  color: #393939;
+                                                  font-family: 'Pretendard', Arial, sans-serif;
+                                                  font-size: 12px;
+                                                  font-weight: 500;
+                                                  padding: 1px 6px;
+                                                  border-radius: 8px;
+                                                  margin-right: 6px;
+                                                  display: inline-block;
+                                                  line-height: 18px;
+                                                "
+                                                                                                    th:text="${keyword}"
+                                                                                            >키워드</span>
+                                                                                        </th:block>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <!-- Article Summary -->
+                                                        <tr>
+                                                            <td class="article-section" style="margin-bottom: 40px">
+                                                                <table
+                                                                        role="presentation"
+                                                                        cellspacing="0"
+                                                                        cellpadding="0"
+                                                                        border="0"
+                                                                        width="100%"
+                                                                >
+                                                                    <tr>
+                                                                        <td>
+                                                                            <p
+                                                                                    class="section-title"
+                                                                                    style="
+                                            color: #000000;
+                                            font-family: 'Pretendard', Arial, sans-serif;
+                                            font-size: 16px;
+                                            font-weight: 500;
+                                            line-height: 24px;
+                                            padding: 0 0 12px 0;
+                                            letter-spacing: -0.1px;
+                                          "
+                                                                            >
+                                                                                Summary
+                                                                            </p>
+                                                                            <p
+                                                                                    class="section-content"
+                                                                                    style="
+                                            color: #000000;
+                                            font-family: 'Pretendard', Arial, sans-serif;
+                                            font-size: 14px;
+                                            font-weight: 500;
+                                            line-height: 22px;
+                                            padding: 0;
+                                            letter-spacing: -0.1px;
+                                          "
+                                                                                    th:utext="${article.summary}"
+                                                                            >
+                                                                                요약 내용
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <!-- Article URL -->
+                                                        <tr>
+                                                            <td class="article-section">
+                                                                <table
+                                                                        role="presentation"
+                                                                        cellspacing="0"
+                                                                        cellpadding="0"
+                                                                        border="0"
+                                                                        width="100%"
+                                                                >
+                                                                    <tr>
+                                                                        <td>
+                                                                            <p
+                                                                                    class="section-title"
+                                                                                    style="
+                                            color: #000000;
+                                            font-family: 'Pretendard', Arial, sans-serif;
+                                            font-size: 16px;
+                                            font-weight: 500;
+                                            line-height: 24px;
+                                            padding: 0 0 12px 0;
+                                            letter-spacing: -0.1px;
+                                          "
+                                                                            >
+                                                                                Url
+                                                                            </p>
+                                                                            <a
+                                                                                    th:href="${article.url}"
+                                                                                    class="url-link"
+                                                                                    style="
+                                            color: #000000;
+                                            font-family: 'Pretendard', Arial, sans-serif;
+                                            font-size: 12px;
+                                            font-weight: 400;
+                                            line-height: 18px;
+                                            text-decoration: underline;
+                                            letter-spacing: -0.1px;
+                                          "
+                                                                                    th:text="${article.url}"
+                                                                            >https://example.com</a>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Spacing between articles -->
+                                            <tr th:unless="${articleStat.last}">
+                                                <td style="height: 30px"></td>
+                                            </tr>
+                                        </th:block>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <!-- Footer Content -->
+                            <tr>
+                                <td class="footer-section" style="padding: 0">
+                                    <table
+                                            role="presentation"
+                                            cellspacing="0"
+                                            cellpadding="0"
+                                            border="0"
+                                            width="331"
+                                    >
+                                        <tr>
+                                            <td class="footer-content" style="margin-bottom: 14px">
+                                                <p
+                                                        class="footer-text"
+                                                        style="
+                                color: #000000;
+                                font-family: 'Pretendard', Arial, sans-serif;
+                                font-size: 14px;
+                                font-weight: 500;
+                                line-height: 25.2px;
+                                padding: 0;
+                                letter-spacing: -0.1px;
+                              "
+                                                >
+                                                    <span class="footer-brand" style="font-weight: bold">MaeJu</span>는
+                                                    매주, 청년의 다음 기회를 연결합니다.<br />불필요한 정보는 줄이고, 꼭
+                                                    필요한 다섯 가지만 전해드릴게요.
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                                    <tr>
+                                                        <td
+                                                                class="cta-button"
+                                                                style="
+                                    background-color: #393939;
+                                    border-radius: 12px;
+                                    padding: 10px;
+                                    width: 330px;
+                                    text-align: center;
+                                  "
+                                                        >
+                                                            <p
+                                                                    class="cta-text"
+                                                                    style="
+                                      color: #ffffff;
+                                      font-family: 'Pretendard', Arial, sans-serif;
+                                      font-size: 14px;
+                                      font-weight: 500;
+                                      line-height: 25.2px;
+                                      padding: 0;
+                                      letter-spacing: -0.1px;
+                                    "
+                                                            >
+                                                                MaeJu 검색 서비스에서 더 많은 기회를 확인하세요. 👋🏻
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

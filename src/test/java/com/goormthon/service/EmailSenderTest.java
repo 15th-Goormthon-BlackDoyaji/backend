@@ -1,5 +1,7 @@
 package com.goormthon.service;
 
+import jakarta.mail.MessagingException;
+import java.io.IOException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +15,8 @@ class EmailSenderTest {
     private EmailSender emailSender;
 
     @Test
-    void sendEmail() {
-        emailSender.sendEmail("kkwoo001021@naver.com", "안녕안녕안녕하세요", "ㅋㅋㅋ");
+    void sendEmail2() throws MessagingException, IOException {
+//        emailSender.sendNewsletterEmail("kkwoo001021@naver.com", "안녕하세유", List.of());
     }
 
 }
