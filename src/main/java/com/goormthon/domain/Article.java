@@ -19,8 +19,9 @@ public class Article {
     public Article(int id, EducationInfos educationInfos) {
         this.number = id;
         this.title = educationInfos.getTitle();
-        this.keywords = Arrays.stream(educationInfos.getKeywords().split(", ")).toList();
-        this.summary = educationInfos.getSummary();
+        this.keywords = Arrays.stream(educationInfos.getKeywords().split(",")).toList();
+        this.summary = educationInfos.getSummary()
+                .replace("\n", "<br/>");
         this.url = educationInfos.getUrl();
     }
 }
