@@ -16,7 +16,7 @@ public class EducationInfoController {
 
     @GetMapping("/infos/me")
     public ResponseEntity<EducationInfoResponses> getEducationInfo(
-            @RequestParam(name = "userId") Long userId,
+            @RequestParam(name = "userId", required = false) Long userId,
             @RequestParam(name = "pageSize") long pageSize
     ) {
         EducationInfoResponses userInfos = educationInfoService.findUserInfos(userId, pageSize);
