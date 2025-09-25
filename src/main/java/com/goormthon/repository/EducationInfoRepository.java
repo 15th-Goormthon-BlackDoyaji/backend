@@ -17,10 +17,11 @@ public interface EducationInfoRepository extends JpaRepository<EducationInfos, L
     @Query("""
                 select educationInfo
                     from EducationInfos educationInfo
-                    where :region is null or educationInfo.region = :region
-                         and :education is null or educationInfo.education = :education
-                         and :interest is null or educationInfo.interest = :interest
-                         and :residency is null or educationInfo.residency = :residency              
+                    where (:region is null or educationInfo.region = :region)
+                         and (:education is null or educationInfo.education = :education)
+                         and (:interest is null or educationInfo.interest = :interest)
+                         and (:residency is null or educationInfo.residency = :residency)
+                    order by educationInfo.deadline desc
             """)
     List<EducationInfos> findByConditions(
             Region region,
