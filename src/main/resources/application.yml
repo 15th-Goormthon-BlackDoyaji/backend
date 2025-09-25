@@ -16,8 +16,8 @@ spring:
     servlet:
       path: /api
   datasource:
-#    url: jdbc:mysql://mysql.goormthon-3.svc.cluster.local:3306/mydb?useSSL=false&serverTimezone=Asia/Seoul
-    url: jdbc:mysql://127.0.0.1:3306/mydb?useSSL=false&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://mysql.goormthon-3.svc.cluster.local:3306/mydb?useSSL=false&serverTimezone=Asia/Seoul
+#    url: jdbc:mysql://127.0.0.1:3306/mydb?useSSL=false&serverTimezone=Asia/Seoul
     username: myuser
     password: mypass123
   jpa:
