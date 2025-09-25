@@ -30,10 +30,10 @@ public class EducationInfoController {
     @GetMapping("/infos")
     public ResponseEntity<EducationInfoResponses> getEducationInfo(
             @RequestParam(name = "search", required = false) String search,
-            @RequestParam(name = "search", required = false) Education education,
-            @RequestParam(name = "search", required = false) Region region,
-            @RequestParam(name = "search", required = false)Residency residency,
-            @RequestParam(name = "search", required = false) Interest interest
+            @RequestParam(name = "education", required = false) Education education,
+            @RequestParam(name = "region", required = false) Region region,
+            @RequestParam(name = "residency", required = false)Residency residency,
+            @RequestParam(name = "interest", required = false) Interest interest
     ) {
         EducationInfoResponses userInfos = educationInfoService.search(search, education, region, residency, interest);
         return ResponseEntity.ok(userInfos);
