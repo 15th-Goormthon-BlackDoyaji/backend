@@ -41,3 +41,7 @@ springdoc:
     operations-sorter: alpha
     persist-authorization: true
     filter: true
+
+cors:
+  origin:
+    - "*"
