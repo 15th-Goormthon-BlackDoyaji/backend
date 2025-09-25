@@ -3,11 +3,13 @@ package com.goormthon.service;
 import com.goormthon.domain.EducationInfos;
 import com.goormthon.domain.Subscriber;
 import com.goormthon.dto.response.EducationInfoResponses;
+import com.goormthon.event.MailEvent;
 import com.goormthon.repository.EducationInfoRepository;
 import com.goormthon.repository.SubscriberRepository;
 import com.goormthon.util.RandomNumberPicker;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +19,7 @@ public class EducationInfoService {
     private final EducationInfoRepository educationInfoRepository;
     private final SubscriberRepository subscriberRepository;
     private final RandomNumberPicker randomNumberPicker;
+    private final ApplicationEventPublisher eventPublisher;
 
     public EducationInfoResponses findUserInfos(Long userId, long pageSize) {
         long totalCount = educationInfoRepository.count();
@@ -33,7 +36,8 @@ public class EducationInfoService {
                 subscriber.getRegion(),
                 subscriber.getEducation(),
                 subscriber.getInterest(),
-                subscriber.getResidency()
+                subscriber.getResidency(),
+                pageSize
         );
 
         //페이지 사이즈만큼 채워주기
@@ -44,10 +48,16 @@ public class EducationInfoService {
 
             List<Long> addInfo = randomNumberPicker.pickRandomExcluding(totalCount, pageSize, selectedInfos);
             List<EducationInfos> educationInfos = educationInfoRepository.findAllByIdIn(addInfo);
+            publishMailEvent(subscriber, educationInfos);
             return EducationInfoResponses.from(educationInfos);
         }
-
+        publishMailEvent(subscriber, filteredInfos);
         return EducationInfoResponses.from(filteredInfos);
+    }
+
+    private void publishMailEvent(Subscriber subscriber, List<EducationInfos> educations) {
+        MailEvent mailEvent = new MailEvent(this, subscriber, educations);
+        eventPublisher.publishEvent(mailEvent);
     }
 
     private EducationInfoResponses getRandomInfos(long pageSize, long totalCount) {

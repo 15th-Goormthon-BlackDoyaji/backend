@@ -33,6 +33,8 @@ public class EducationInfos {
     @Column(columnDefinition = "TEXT")
     private String summary;
 
+    private String keywords;
+
     @Enumerated(value= EnumType.STRING)
     private Education education;
 

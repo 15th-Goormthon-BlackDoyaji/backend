@@ -16,8 +16,8 @@ public record SubscribeRequest(
         Interest interest
 ) {
 
-        public Subscriber toSubscriber() {
-                return new Subscriber(email, education, region, residency, interest);
-        }
+    public Subscriber toSubscriber() {
+        return new Subscriber(email, education, region, residency, interest);
+    }
 
 }
