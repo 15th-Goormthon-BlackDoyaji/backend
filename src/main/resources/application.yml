@@ -1,4 +1,15 @@
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hackertonfive@gmail.com
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   application:
     name: black-pig-api
   mvc:
@@ -17,4 +28,15 @@ management:
   server:
     port: 8080
 
-
+springdoc:
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: alpha
+    persist-authorization: true
+    filter: true
