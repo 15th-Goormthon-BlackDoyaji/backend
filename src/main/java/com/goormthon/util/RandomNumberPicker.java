@@ -1,50 +1,42 @@
 package com.goormthon.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RandomNumberPicker {
 
-    //랜덤한 N개의 숫자 산출
-    public List<Long> pickRandom(long totalCount, long pageSize) {
-        if (pageSize > totalCount) {
-            throw new IllegalArgumentException("pageSize cannot be greater than totalCount");
+    public List<Long> pickRandomNumbers(List<Long> numbers, long n) {
+        if (n > numbers.size()) {
+            throw new IllegalArgumentException("n은 numbers의 크기보다 클 수 없습니다.");
         }
 
-        Random random = new Random();
-        Set<Long> picked = new HashSet<>();
+        // 원본 리스트를 바꾸지 않기 위해 복사
+        List<Long> copy = new ArrayList<>(numbers);
 
-        while (picked.size() < pageSize) {
-            long num = random.nextLong(totalCount) + 1; // 1~totalCount
-            picked.add(num); // Set이라 중복 자동 제거
-        }
+        // 섞기
+        Collections.shuffle(copy);
 
-        return new ArrayList<>(picked);
+        // 앞에서 n개 추출
+        return new ArrayList<>(copy.subList(0, (int) n));
     }
 
-    //제외하고 뽑기
-    public List<Long> pickRandomExcluding(long totalCount, long size, List<Long> excludedIds) {
-        if (size > totalCount - excludedIds.size()) {
-            throw new IllegalArgumentException("size is too large for the available numbers");
+    public List<Long> pickRandomNumbers(List<Long> numbers, long n, List<Long> excludes) {
+        // numbers 복사 후 excludes 제거
+        List<Long> filtered = new ArrayList<>(numbers);
+        filtered.removeAll(excludes);
+
+        if (n > filtered.size()) {
+            throw new IllegalArgumentException("n은 (numbers - excludes)의 크기보다 클 수 없습니다.");
         }
 
-        Set<Long> excludedSet = new HashSet<>(excludedIds); // 빠른 탐색용
-        Set<Long> picked = new HashSet<>();
-        Random random = new Random();
+        // 섞기
+        Collections.shuffle(filtered);
 
-        while (picked.size() < size) {
-            long num = random.nextInt((int) totalCount) + 1; // 1~totalCount
-            if (!excludedSet.contains(num)) {
-                picked.add(num);
-            }
-        }
-
-        return new ArrayList<>(picked);
+        // 앞에서 n개 추출
+        return new ArrayList<>(filtered.subList(0, (int) n));
     }
 
 }

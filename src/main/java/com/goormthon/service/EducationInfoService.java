@@ -27,11 +27,14 @@ public class EducationInfoService {
     private final ApplicationEventPublisher eventPublisher;
 
     public EducationInfoResponses findUserInfos(Long userId, long pageSize) {
-        long totalCount = educationInfoRepository.count();
+        List<EducationInfos> infos = educationInfoRepository.findAll();
+        List<Long> ids = infos.stream()
+                .map(EducationInfos::getId)
+                .toList();
 
         //없을 경우 > 랜덤으로 반환
         if (userId == null) {
-            return getRandomInfos(pageSize, totalCount);
+            return getRandomInfos(pageSize, ids);
         }
 
         Subscriber subscriber = subscriberRepository.getSubscriber(userId);
@@ -51,7 +54,11 @@ public class EducationInfoService {
                     .map(EducationInfos::getId)
                     .toList();
 
-            List<Long> addInfo = randomNumberPicker.pickRandomExcluding(totalCount, pageSize, selectedInfos);
+            List<Long> addInfo = randomNumberPicker.pickRandomNumbers(
+                    selectedInfos,
+                    pageSize - selectedInfos.size(),
+                    selectedInfos
+            );
             List<EducationInfos> educationInfos = educationInfoRepository.findAllByIdIn(addInfo);
             publishMailEvent(subscriber, educationInfos);
             return EducationInfoResponses.from(educationInfos);
@@ -77,7 +84,7 @@ public class EducationInfoService {
                 10000
         );
 
-        if(search != null) {
+        if (search != null) {
             return filteredInfos.stream()
                     .filter(info -> info.getTitle().contains(search))
                     .collect(Collectors.collectingAndThen(Collectors.toList(), EducationInfoResponses::from));
@@ -90,8 +97,8 @@ public class EducationInfoService {
         eventPublisher.publishEvent(mailEvent);
     }
 
-    private EducationInfoResponses getRandomInfos(long pageSize, long totalCount) {
-        List<Long> selectedInfos = randomNumberPicker.pickRandom(totalCount, pageSize);
+    private EducationInfoResponses getRandomInfos(long pageSize, List<Long> ids) {
+        List<Long> selectedInfos = randomNumberPicker.pickRandomNumbers(ids, pageSize);
         List<EducationInfos> educationInfos = educationInfoRepository.findAllByIdIn(selectedInfos);
         return EducationInfoResponses.from(educationInfos);
     }
