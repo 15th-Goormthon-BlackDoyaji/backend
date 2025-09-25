@@ -48,4 +48,6 @@ public class EducationInfos {
     @NotNull
     private LocalDate deadline;
 
+    @NotBlank
+    private String url;
 }
