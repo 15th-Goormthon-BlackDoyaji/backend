@@ -4,6 +4,7 @@ import com.goormthon.domain.Education;
 import com.goormthon.domain.Interest;
 import com.goormthon.domain.Region;
 import com.goormthon.domain.Residency;
+import com.goormthon.domain.Subscriber;
 import jakarta.validation.constraints.Email;
 
 public record SubscribeRequest(
@@ -14,5 +15,9 @@ public record SubscribeRequest(
         Residency residency,
         Interest interest
 ) {
+
+        public Subscriber toSubscriber() {
+                return new Subscriber(email, education, region, residency, interest);
+        }
 
 }
