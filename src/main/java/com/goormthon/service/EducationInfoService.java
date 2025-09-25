@@ -1,6 +1,10 @@
 package com.goormthon.service;
 
+import com.goormthon.domain.Education;
 import com.goormthon.domain.EducationInfos;
+import com.goormthon.domain.Interest;
+import com.goormthon.domain.Region;
+import com.goormthon.domain.Residency;
 import com.goormthon.domain.Subscriber;
 import com.goormthon.dto.response.EducationInfoResponses;
 import com.goormthon.event.MailEvent;
@@ -8,6 +12,7 @@ import com.goormthon.repository.EducationInfoRepository;
 import com.goormthon.repository.SubscriberRepository;
 import com.goormthon.util.RandomNumberPicker;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -52,6 +57,31 @@ public class EducationInfoService {
             return EducationInfoResponses.from(educationInfos);
         }
         publishMailEvent(subscriber, filteredInfos);
+        return EducationInfoResponses.from(filteredInfos);
+    }
+
+    public EducationInfoResponses search(
+            String search,
+            Education education,
+            Region region,
+            Residency residency,
+            Interest interest
+    ) {
+
+        //있을 경우
+        List<EducationInfos> filteredInfos = educationInfoRepository.findByConditions(
+                region,
+                education,
+                interest,
+                residency,
+                10000
+        );
+
+        if(search != null) {
+            return filteredInfos.stream()
+                    .filter(info -> info.getTitle().contains(search))
+                    .collect(Collectors.collectingAndThen(Collectors.toList(), EducationInfoResponses::from));
+        }
         return EducationInfoResponses.from(filteredInfos);
     }
 

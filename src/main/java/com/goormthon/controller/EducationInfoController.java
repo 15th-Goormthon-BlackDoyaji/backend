@@ -1,5 +1,9 @@
 package com.goormthon.controller;
 
+import com.goormthon.domain.Education;
+import com.goormthon.domain.Interest;
+import com.goormthon.domain.Region;
+import com.goormthon.domain.Residency;
 import com.goormthon.dto.response.EducationInfoResponses;
 import com.goormthon.service.EducationInfoService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +24,18 @@ public class EducationInfoController {
             @RequestParam(name = "pageSize") long pageSize
     ) {
         EducationInfoResponses userInfos = educationInfoService.findUserInfos(userId, pageSize);
+        return ResponseEntity.ok(userInfos);
+    }
+
+    @GetMapping("/infos")
+    public ResponseEntity<EducationInfoResponses> getEducationInfo(
+            @RequestParam(name = "search", required = false) String search,
+            @RequestParam(name = "search", required = false) Education education,
+            @RequestParam(name = "search", required = false) Region region,
+            @RequestParam(name = "search", required = false)Residency residency,
+            @RequestParam(name = "search", required = false) Interest interest
+    ) {
+        EducationInfoResponses userInfos = educationInfoService.search(search, education, region, residency, interest);
         return ResponseEntity.ok(userInfos);
     }
 }
