@@ -46,12 +46,25 @@ public class EducationInfoService {
             return getRandomInfos(pageSize, ids);
         }
 
+        //일주일 전것이 비어있지 않을 경우
+        List<UserCard> oneWeekCards = getCardsWithInWeeks(userId);
+        if(!oneWeekCards.isEmpty()) {
+            List<Long> userInfos = oneWeekCards.stream()
+                    .map(UserCard::getInfoId)
+                    .toList();
+            List<EducationInfos> educationInfos = educationInfoRepository.findAllByIdIn(userInfos);
+            return EducationInfoResponses.from(educationInfos);
+        }
+
+
+        //일주일 리프레시 & 선을 그어주기
         Subscriber subscriber = subscriberRepository.getSubscriber(userId);
         List<EducationInfos> filteredInfos = new ArrayList<>();
 
         //있을 경우 : Rag > 실패시 필터링 결과 반환
         try {
             filteredInfos= ragService.rag(subscriber, pageSize);
+            saveCards(subscriber.getId(), filteredInfos);
             return EducationInfoResponses.from(filteredInfos);
         } catch (Exception e) {
             log.error("rag exception", e);
@@ -62,24 +75,7 @@ public class EducationInfoService {
                     subscriber.getResidency(),
                     pageSize
             );
-        //일주일 전것이 비어있지 않을 경우
-        List<UserCard> oneWeekCards = getCardsWithInWeeks();
-        if(!oneWeekCards.isEmpty()) {
-            List<Long> userInfos = oneWeekCards.stream()
-                    .map(UserCard::getInfoId)
-                    .toList();
-            List<EducationInfos> educationInfos = educationInfoRepository.findAllByIdIn(userInfos);
-            return EducationInfoResponses.from(educationInfos);
-        }
 
-        //있을 경우
-        List<EducationInfos> filteredInfos = educationInfoRepository.findByConditions(
-                subscriber.getRegion(),
-                subscriber.getEducation(),
-                subscriber.getInterest(),
-                subscriber.getResidency(),
-                pageSize
-        );
 
             //페이지 사이즈만큼 채워주기
             if (filteredInfos.size() < pageSize) {
@@ -87,33 +83,33 @@ public class EducationInfoService {
                         .map(EducationInfos::getId)
                         .toList();
 
-                List<Long> addInfo = randomNumberPicker.pickRandomExcluding(totalCount, pageSize, selectedInfos);
+                List<Long> addInfo = randomNumberPicker.pickRandomNumbers(ids, pageSize - filteredInfos.size(), selectedInfos);
                 List<EducationInfos> educationInfos = educationInfoRepository.findAllByIdIn(addInfo);
                 filteredInfos.addAll(educationInfos);
+                saveCards(subscriber.getId(), filteredInfos);
                 return EducationInfoResponses.from(filteredInfos);
             }
+            saveCards(subscriber.getId(), filteredInfos);
             return EducationInfoResponses.from(filteredInfos);
         } finally {
             log.info("send mail event");
-            publishMailEvent(subscriber, filteredInfos);
+            if(!filteredInfos.isEmpty()) {
+                publishMailEvent(subscriber, filteredInfos);
+            }
         }
-            List<Long> addInfo = randomNumberPicker.pickRandomNumbers(
-                    selectedInfos,
-                    pageSize - selectedInfos.size(),
-                    selectedInfos
-            );
-            List<EducationInfos> educationInfos = educationInfoRepository.findAllByIdIn(addInfo);
-            publishMailEvent(subscriber, educationInfos);
-            return EducationInfoResponses.from(educationInfos);
-        }
-        publishMailEvent(subscriber, filteredInfos);
-        return EducationInfoResponses.from(filteredInfos);
     }
 
-    private List<UserCard> getCardsWithInWeeks() {
+    private void saveCards(long subscriberId, List<EducationInfos> educationInfos) {
+        List<UserCard> userCards = educationInfos.stream()
+                .map(info -> new UserCard(subscriberId, info.getId()))
+                .toList();
+        userCardRepository.saveAll(userCards);
+    }
+
+    private List<UserCard> getCardsWithInWeeks(long subscriberId) {
         LocalDate oneWeekAgo = LocalDate.now(ZoneId.of("Asia/Seoul"))
                 .minusWeeks(1);
-        return userCardRepository.findAllByAfterDate(oneWeekAgo);
+        return userCardRepository.findAllByCondition(subscriberId, oneWeekAgo);
     }
 
     public EducationInfoResponses search(
@@ -147,9 +143,6 @@ public class EducationInfoService {
         eventPublisher.publishEvent(mailEvent);
     }
 
-    private EducationInfoResponses getRandomInfos(long pageSize, long totalCount) {
-        log.info("random Choice");
-        List<Long> selectedInfos = randomNumberPicker.pickRandom(totalCount, pageSize);
     private EducationInfoResponses getRandomInfos(long pageSize, List<Long> ids) {
         List<Long> selectedInfos = randomNumberPicker.pickRandomNumbers(ids, pageSize);
         List<EducationInfos> educationInfos = educationInfoRepository.findAllByIdIn(selectedInfos);

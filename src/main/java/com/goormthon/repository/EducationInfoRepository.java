@@ -23,7 +23,7 @@ public interface EducationInfoRepository extends JpaRepository<EducationInfos, L
                          and (:education is null or educationInfo.education = :education or educationInfo.education is null)
                          and (:interest is null or educationInfo.interest = :interest or educationInfo.interest is null)
                          and (:residency is null or educationInfo.residency = :residency or educationInfo.residency is null)
-                    order by educationInfo.deadline desc
+                    order by educationInfo.deadline
                     limit :pageSize
             """)
     List<EducationInfos> findByConditions(

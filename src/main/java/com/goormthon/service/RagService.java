@@ -27,7 +27,6 @@ public class RagService {
     private final AiClient aiClient;
     private final EducationInfoRepository educationInfoRepository;
     private final RandomNumberPicker randomNumberPicker;
-    private final ApplicationEventPublisher publisher;
 
     public List<EducationInfos> rag(Subscriber subscriber, long pageSize) {
         String tags = subscriber.getTags();
@@ -46,8 +45,11 @@ public class RagService {
             List<Long> selectedInfos = filteredInfos.stream()
                     .map(EducationInfos::getId)
                     .toList();
-            long totalCount = educationInfoRepository.count();
-            List<Long> addInfo = randomNumberPicker.pickRandomExcluding(totalCount, pageSize- filteredInfos.size(), selectedInfos);
+            List<Long> ids = educationInfoRepository.findAll()
+                    .stream()
+                    .map(edu -> edu.getId())
+                    .toList();
+            List<Long> addInfo = randomNumberPicker.pickRandomNumbers(ids, pageSize- filteredInfos.size(), selectedInfos);
             List<EducationInfos> educationInfos = educationInfoRepository.findAllByIdIn(addInfo);
             educationInfos.addAll(filteredInfos);
             return educationInfos;
