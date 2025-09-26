@@ -10,7 +10,6 @@ import java.time.ZoneId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @Entity(name = "user_card")
@@ -28,7 +27,7 @@ public class UserCard {
     @Column(name = "info_id")
     private long infoId;
 
-    private LocalDate localDate;
+    private LocalDate createdAt;
 
     public UserCard(long subscriberId, long infoId) {
         this(null, subscriberId, infoId, LocalDate.now(ZoneId.of("Asia/Seoul")));

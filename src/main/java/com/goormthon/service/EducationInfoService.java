@@ -6,11 +6,15 @@ import com.goormthon.domain.Interest;
 import com.goormthon.domain.Region;
 import com.goormthon.domain.Residency;
 import com.goormthon.domain.Subscriber;
+import com.goormthon.domain.UserCard;
 import com.goormthon.dto.response.EducationInfoResponses;
 import com.goormthon.event.MailEvent;
 import com.goormthon.repository.EducationInfoRepository;
 import com.goormthon.repository.SubscriberRepository;
+import com.goormthon.repository.UserCardRepository;
 import com.goormthon.util.RandomNumberPicker;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,7 @@ public class EducationInfoService {
     private final EducationInfoRepository educationInfoRepository;
     private final SubscriberRepository subscriberRepository;
     private final RandomNumberPicker randomNumberPicker;
+    private final UserCardRepository userCardRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     public EducationInfoResponses findUserInfos(Long userId, long pageSize) {
@@ -38,6 +43,16 @@ public class EducationInfoService {
         }
 
         Subscriber subscriber = subscriberRepository.getSubscriber(userId);
+
+        //일주일 전것이 비어있지 않을 경우
+        List<UserCard> oneWeekCards = getCardsWithInWeeks();
+        if(!oneWeekCards.isEmpty()) {
+            List<Long> userInfos = oneWeekCards.stream()
+                    .map(UserCard::getInfoId)
+                    .toList();
+            List<EducationInfos> educationInfos = educationInfoRepository.findAllByIdIn(userInfos);
+            return EducationInfoResponses.from(educationInfos);
+        }
 
         //있을 경우
         List<EducationInfos> filteredInfos = educationInfoRepository.findByConditions(
@@ -65,6 +80,12 @@ public class EducationInfoService {
         }
         publishMailEvent(subscriber, filteredInfos);
         return EducationInfoResponses.from(filteredInfos);
+    }
+
+    private List<UserCard> getCardsWithInWeeks() {
+        LocalDate oneWeekAgo = LocalDate.now(ZoneId.of("Asia/Seoul"))
+                .minusWeeks(1);
+        return userCardRepository.findAllByAfterDate(oneWeekAgo);
     }
 
     public EducationInfoResponses search(
