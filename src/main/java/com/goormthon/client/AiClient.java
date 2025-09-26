@@ -8,7 +8,6 @@ import com.goormthon.dto.response.PromptResponse;
 import com.goormthon.exception.custom.GroomServerErrorException;
 import com.goormthon.exception.errorcode.ServerErrorCode;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -24,20 +23,23 @@ public class AiClient {
     }
 
     public List<String> getAnaylzedTitle(PromptRequest request) {
+        log.info("request: {} ", request);
+
         PromptResponse response = restClient.post()
                 .uri("https://live-stargate.sionic.im/api/v2/answer")
-                .header("storm-api-key", "secretKey")
+                .header("storm-api-key", "st_eac62cf0a9e14aafa80c26da145f4c93")
                 .body(request)
                 .retrieve()
                 .body(PromptResponse.class);
-
+        log.info("response: {} ", response);
         return mapToRseponse(response.getAnswer());
     }
 
     private List<String> mapToRseponse(String response) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.readValue(response, new TypeReference<List<String>>() {});
+            return mapper.readValue(response, new TypeReference<List<String>>() {
+            });
         } catch (JsonProcessingException e) {
             log.error("response: {} ", response);
             throw new GroomServerErrorException(ServerErrorCode.RESPONSE_PARSING_ERROR);

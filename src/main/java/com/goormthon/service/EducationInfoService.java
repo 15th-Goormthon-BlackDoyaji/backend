@@ -15,12 +15,15 @@ import com.goormthon.repository.UserCardRepository;
 import com.goormthon.util.RandomNumberPicker;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EducationInfoService {
@@ -30,6 +33,7 @@ public class EducationInfoService {
     private final RandomNumberPicker randomNumberPicker;
     private final UserCardRepository userCardRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final RagService ragService;
 
     public EducationInfoResponses findUserInfos(Long userId, long pageSize) {
         List<EducationInfos> infos = educationInfoRepository.findAll();
@@ -43,7 +47,21 @@ public class EducationInfoService {
         }
 
         Subscriber subscriber = subscriberRepository.getSubscriber(userId);
+        List<EducationInfos> filteredInfos = new ArrayList<>();
 
+        //있을 경우 : Rag > 실패시 필터링 결과 반환
+        try {
+            filteredInfos= ragService.rag(subscriber, pageSize);
+            return EducationInfoResponses.from(filteredInfos);
+        } catch (Exception e) {
+            log.error("rag exception", e);
+            filteredInfos = educationInfoRepository.findByConditions(
+                    subscriber.getRegion(),
+                    subscriber.getEducation(),
+                    subscriber.getInterest(),
+                    subscriber.getResidency(),
+                    pageSize
+            );
         //일주일 전것이 비어있지 않을 경우
         List<UserCard> oneWeekCards = getCardsWithInWeeks();
         if(!oneWeekCards.isEmpty()) {
@@ -63,12 +81,22 @@ public class EducationInfoService {
                 pageSize
         );
 
-        //페이지 사이즈만큼 채워주기
-        if (filteredInfos.size() < pageSize) {
-            List<Long> selectedInfos = filteredInfos.stream()
-                    .map(EducationInfos::getId)
-                    .toList();
+            //페이지 사이즈만큼 채워주기
+            if (filteredInfos.size() < pageSize) {
+                List<Long> selectedInfos = filteredInfos.stream()
+                        .map(EducationInfos::getId)
+                        .toList();
 
+                List<Long> addInfo = randomNumberPicker.pickRandomExcluding(totalCount, pageSize, selectedInfos);
+                List<EducationInfos> educationInfos = educationInfoRepository.findAllByIdIn(addInfo);
+                filteredInfos.addAll(educationInfos);
+                return EducationInfoResponses.from(filteredInfos);
+            }
+            return EducationInfoResponses.from(filteredInfos);
+        } finally {
+            log.info("send mail event");
+            publishMailEvent(subscriber, filteredInfos);
+        }
             List<Long> addInfo = randomNumberPicker.pickRandomNumbers(
                     selectedInfos,
                     pageSize - selectedInfos.size(),
@@ -114,10 +142,14 @@ public class EducationInfoService {
     }
 
     private void publishMailEvent(Subscriber subscriber, List<EducationInfos> educations) {
+        log.info("subscriber : {}, educations: {}", subscriber, educations);
         MailEvent mailEvent = new MailEvent(this, subscriber, educations);
         eventPublisher.publishEvent(mailEvent);
     }
 
+    private EducationInfoResponses getRandomInfos(long pageSize, long totalCount) {
+        log.info("random Choice");
+        List<Long> selectedInfos = randomNumberPicker.pickRandom(totalCount, pageSize);
     private EducationInfoResponses getRandomInfos(long pageSize, List<Long> ids) {
         List<Long> selectedInfos = randomNumberPicker.pickRandomNumbers(ids, pageSize);
         List<EducationInfos> educationInfos = educationInfoRepository.findAllByIdIn(selectedInfos);
