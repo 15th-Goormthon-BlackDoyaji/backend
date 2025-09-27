@@ -27,7 +27,7 @@ public class AiClient {
 
         PromptResponse response = restClient.post()
                 .uri("https://live-stargate.sionic.im/api/v2/answer")
-                .header("storm-api-key", "st_eac62cf0a9e14aafa80c26da145f4c93")
+                .header("storm-api-key", "")
                 .body(request)
                 .retrieve()
                 .body(PromptResponse.class);
